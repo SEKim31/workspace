@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ 나의 할 일 목록</title>
+
+    <!--
+        🎨 Tailwind CSS 불러오기
+        Tailwind는 미리 만들어진 CSS 클래스를 제공해요.
+        예: "bg-blue-500"이라고 쓰면 파란색 배경이 적용돼요!
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-purple-100 to-blue-100 min-h-screen py-10">
+    <!--
+        📦 메인 컨테이너 (카드 스타일)
+        - max-w-md: 최대 너비 제한 (너무 넓어지지 않게)
+        - mx-auto: 좌우 마진을 자동으로 → 가운데 정렬!
+        - shadow-xl: 그림자 효과 (카드처럼 떠있는 느낌)
+        - rounded-2xl: 모서리를 둥글게
+    -->
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+
+        <!-- 🎯 헤더 부분 (제목) -->
+        <div class="bg-gradient-to-r from-purple-500 to-blue-500 px-6 py-8">
+            <h1 class="text-2xl font-bold text-white text-center">
+                ✅ 나의 할 일 목록
+            </h1>
+            <p class="text-purple-100 text-center mt-2">
+                오늘 할 일을 적어보세요!
+            </p>
+        </div>
+
+        <!-- 📝 입력 영역 -->
+        <div class="p-6">
+            <!--
+                🔄 입력창과 버튼을 가로로 나란히 배치
+                - flex: 플렉스박스 사용 (요소들을 유연하게 배치)
+                - gap-3: 요소 사이에 간격 주기
+            -->
+            <div class="flex gap-3">
+                <!--
+                    ⌨️ 텍스트 입력 필드
+                    - flex-1: 남은 공간을 모두 차지해요
+                    - focus:ring-2: 클릭하면 테두리가 빛나요
+                -->
+                <input
+                    type="text"
+                    id="todoInput"
+                    placeholder="할 일을 입력하세요..."
+                    class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl
+                           focus:outline-none focus:border-purple-500 focus:ring-2
+                           focus:ring-purple-200 transition-all"
+                >
+
+                <!--
+                    ➕ 추가 버튼
+                    - hover:bg-purple-600: 마우스 올리면 색이 진해져요
+                    - active:scale-95: 클릭하면 살짝 작아져요 (누르는 느낌!)
+                -->
+                <button
+                    onclick="addTodo()"
+                    class="px-6 py-3 bg-purple-500 text-white font-semibold rounded-xl
+                           hover:bg-purple-600 active:scale-95 transition-all
+                           shadow-lg hover:shadow-xl"
+                >
+                    추가
+                </button>
+            </div>
+
+            <!--
+                📋 할 일 목록이 표시될 영역
+                - mt-6: 위쪽에 마진(여백)을 줘요
+                - space-y-3: 자식 요소들 사이에 세로 간격
+            -->
+            <ul id="todoList" class="mt-6 space-y-3">
+                <!-- 여기에 JavaScript가 할 일 항목들을 추가해요! -->
+            </ul>
+
+            <!-- 📊 할 일 개수 표시 -->
+            <div id="todoCount" class="mt-6 text-center text-gray-500 text-sm">
+                할 일을 추가해보세요! 🎉
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // 🎮 JavaScript 코드 시작!
+        // 여기서 할 일 목록의 동작을 만들어요
+        // ============================================
+
+        /**
+         * 🎯 이 함수가 하는 일: 새로운 할 일을 목록에 추가해요
+         *
+         * 📥 입력값(매개변수): 없음 (입력창에서 직접 값을 가져와요)
+         * 📤 출력값(반환값): 없음 (화면에 직접 표시해요)
+         *
+         * 💡 쉽게 말하면: 메모장에 새 줄을 추가하는 것과 같아요!
+         */
+        function addTodo() {
+            // 📌 Step 1: 입력창에서 텍스트 가져오기
+            // document.getElementById()는 HTML에서 특정 요소를 찾아와요
+            // 마치 "todoInput이라는 이름표가 붙은 상자를 찾아줘!"라고 하는 것과 같아요
+            const input = document.getElementById('todoInput');
+
+            // 📌 Step 2: 입력값 정리하기
+            // .value는 입력창에 적힌 내용이에요
+            // .trim()은 앞뒤 공백을 제거해요 ("  안녕  " → "안녕")
+            const text = input.value.trim();
+
+            // 📌 Step 3: 빈 값인지 확인하기
+            // 아무것도 안 적었으면 그냥 돌아가요 (함수 종료)
+            if (text === '') {
+                alert('할 일을 입력해주세요! 📝');
+                return; // ← 여기서 함수가 끝나요
+            }
+
+            // 📌 Step 4: 할 일 목록(ul 태그) 찾기
+            const todoList = document.getElementById('todoList');
+
+            // 📌 Step 5: 새로운 할 일 항목(li 태그) 만들기
+            const li = document.createElement('li');
+
+            // 📌 Step 6: 할 일 항목의 HTML 내용 설정하기
+            // innerHTML을 사용하면 HTML 코드를 직접 넣을 수 있어요
+            li.innerHTML = `
+                <!--
+                    📦 할 일 항목 컨테이너
+                    - flex items-center: 가로로 배치 & 세로 중앙 정렬
+                    - bg-gray-50: 연한 회색 배경
+                -->
+                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl
+                            border-2 border-gray-100 hover:border-purple-200
+                            transition-all group">
+
+                    <!-- ☑️ 체크박스 -->
+                    <input
+                        type="checkbox"
+                        onchange="toggleTodo(this)"
+                        class="w-5 h-5 text-purple-500 rounded-lg cursor-pointer
+                               accent-purple-500"
+                    >
+
+                    <!-- 📝 할 일 텍스트 -->
+                    <span class="flex-1 text-gray-700 todo-text">
+                        ${text}
+                    </span>
+
+                    <!-- 🗑️ 삭제 버튼 -->
+                    <button
+                        onclick="deleteTodo(this)"
+                        class="px-3 py-1 text-red-500 hover:bg-red-100
+                               rounded-lg transition-all opacity-0
+                               group-hover:opacity-100"
+                    >
+                        삭제
+                    </button>
+                </div>
+            `;
+
+            // 📌 Step 7: 만든 항목을 목록에 추가하기
+            // appendChild()는 자식 요소로 추가해요
+            // 마치 책장에 새 책을 꽂는 것과 같아요!
+            todoList.appendChild(li);
+
+            // 📌 Step 8: 입력창 비우기 (다음 입력을 위해)
+            input.value = '';
+
+            // 📌 Step 9: 할 일 개수 업데이트
+            updateCount();
+        }
+
+        /**
+         * 🎯 이 함수가 하는 일: 체크박스를 클릭하면 줄긋기 효과를 줘요
+         *
+         * 📥 입력값(매개변수):
+         *   - checkbox: 클릭한 체크박스 요소
+         *
+         * 📤 출력값(반환값): 없음
+         *
+         * 💡 쉽게 말하면: 완료한 일에 줄을 긋는 것처럼요!
+         */
+        function toggleTodo(checkbox) {
+            // 📌 체크박스 옆에 있는 텍스트 찾기
+            // nextElementSibling은 "바로 옆에 있는 요소"를 의미해요
+            // 마치 줄 서있는 사람 중 "내 바로 다음 사람"을 찾는 것과 같아요
+            const textSpan = checkbox.nextElementSibling;
+
+            // 📌 체크 상태에 따라 스타일 변경
+            // checked가 true면 체크된 상태예요
+            if (checkbox.checked) {
+                // ✅ 체크됨 → 줄긋기 + 회색으로 변경
+                textSpan.classList.add('line-through', 'text-gray-400');
+            } else {
+                // ⬜ 체크 해제 → 줄긋기 제거 + 원래 색으로
+                textSpan.classList.remove('line-through', 'text-gray-400');
+            }
+
+            // 📌 할 일 개수 업데이트
+            updateCount();
+        }
+
+        /**
+         * 🎯 이 함수가 하는 일: 할 일 항목을 삭제해요
+         *
+         * 📥 입력값(매개변수):
+         *   - button: 클릭한 삭제 버튼 요소
+         *
+         * 📤 출력값(반환값): 없음
+         *
+         * 💡 쉽게 말하면: 메모장에서 한 줄을 지우는 것과 같아요!
+         */
+        function deleteTodo(button) {
+            // 📌 삭제할 항목 찾기
+            // closest('li')는 "나를 감싸고 있는 li 태그 중 가장 가까운 것"을 찾아요
+            // 마치 "내가 속한 방을 찾아줘"라고 하는 것과 같아요
+            const li = button.closest('li');
+
+            // 📌 부드러운 삭제 애니메이션
+            // 투명도를 0으로 만들고, 크기도 줄여요
+            li.style.opacity = '0';
+            li.style.transform = 'translateX(20px)';
+            li.style.transition = 'all 0.3s ease';
+
+            // 📌 0.3초 후에 실제로 삭제
+            // setTimeout은 "일정 시간 후에 실행해줘"라는 의미예요
+            setTimeout(() => {
+                li.remove(); // 요소를 완전히 제거해요
+                updateCount(); // 개수 업데이트
+            }, 300); // 300밀리초 = 0.3초
+        }
+
+        /**
+         * 🎯 이 함수가 하는 일: 남은 할 일 개수를 세서 보여줘요
+         *
+         * 📥 입력값(매개변수): 없음
+         * 📤 출력값(반환값): 없음
+         *
+         * 💡 쉽게 말하면: "남은 숙제가 몇 개야?"를 알려주는 것과 같아요!
+         */
+        function updateCount() {
+            // 📌 모든 할 일 항목 가져오기
+            const todos = document.querySelectorAll('#todoList li');
+
+            // 📌 완료된 항목 개수 세기
+            // querySelectorAll은 조건에 맞는 모든 요소를 찾아요
+            // :checked는 체크된 체크박스만 찾는 조건이에요
+            const completed = document.querySelectorAll('#todoList input:checked').length;
+
+            // 📌 총 개수와 완료 개수 계산
+            const total = todos.length;
+            const remaining = total - completed;
+
+            // 📌 화면에 표시할 메시지 만들기
+            const countDiv = document.getElementById('todoCount');
+
+            // ❓ 조건에 따라 다른 메시지 보여주기
+            if (total === 0) {
+                countDiv.textContent = '할 일을 추가해보세요! 🎉';
+            } else if (remaining === 0) {
+                countDiv.textContent = '🎊 모든 할 일을 완료했어요! 대단해요!';
+            } else {
+                countDiv.textContent = `📋 총 ${total}개 중 ${remaining}개 남았어요!`;
+            }
+        }
+
+        // ============================================
+        // ⌨️ 키보드 이벤트 설정
+        // Enter 키를 누르면 할 일이 추가되도록 해요
+        // ============================================
+        document.getElementById('todoInput').addEventListener('keypress', function(event) {
+            // 📌 Enter 키(키 코드 13)를 눌렀는지 확인
+            if (event.key === 'Enter') {
+                addTodo(); // 할 일 추가 함수 실행!
+            }
+        });
+    </script>
+</body>
+</html>

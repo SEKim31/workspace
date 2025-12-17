@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스톱워치 앱</title>
+    <!--
+        📦 Tailwind CSS 불러오기
+        Tailwind는 미리 만들어진 CSS 클래스들의 모음이에요.
+        마치 레고 블록처럼 클래스를 조합해서 디자인을 만들 수 있어요!
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+    <!--
+        🎨 body 태그의 Tailwind 클래스 설명:
+        - min-h-screen: 화면 전체 높이를 채워요
+        - bg-gradient-to-br: 왼쪽 위에서 오른쪽 아래로 그라데이션
+        - from-purple-500: 시작 색상은 보라색
+        - to-pink-500: 끝 색상은 분홍색
+        - flex: 플렉스박스 (물건을 정렬하는 마법 상자)
+        - items-center: 세로 방향 가운데 정렬
+        - justify-center: 가로 방향 가운데 정렬
+    -->
+
+    <!-- 🎯 메인 카드: 스톱워치가 들어갈 하얀 상자 -->
+    <div class="bg-white rounded-3xl shadow-2xl p-10 text-center">
+        <!--
+            📝 카드 스타일 설명:
+            - bg-white: 하얀 배경
+            - rounded-3xl: 모서리를 둥글게 (숫자가 클수록 더 둥글어요)
+            - shadow-2xl: 그림자 효과 (입체감을 줘요)
+            - p-10: padding 10 (안쪽 여백, 내용물과 테두리 사이 공간)
+            - text-center: 글자를 가운데 정렬
+        -->
+
+        <!-- 📌 제목 -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">⏱️ 스톱워치</h1>
+        <!--
+            - text-3xl: 글자 크기 (xl = extra large, 3xl은 매우 큼)
+            - font-bold: 글자를 굵게
+            - text-gray-800: 진한 회색 글자
+            - mb-8: margin-bottom 8 (아래쪽 바깥 여백)
+        -->
+
+        <!-- ⏰ 시간 표시 영역 -->
+        <div id="display" class="text-7xl font-mono text-gray-700 mb-10 tracking-wider">
+            00:00:00
+        </div>
+        <!--
+            🔍 시간 표시 스타일 설명:
+            - id="display": JavaScript에서 이 요소를 찾기 위한 이름표
+            - text-7xl: 아주 큰 글자 크기
+            - font-mono: 고정폭 글꼴 (숫자가 움직여도 자리가 안 바뀌어요)
+            - tracking-wider: 글자 사이 간격을 넓게
+        -->
+
+        <!-- 🎮 버튼들을 담는 영역 -->
+        <div class="flex gap-4 justify-center">
+            <!--
+                - flex: 버튼들을 가로로 나란히 배치
+                - gap-4: 버튼 사이 간격
+                - justify-center: 가운데 정렬
+            -->
+
+            <!-- ▶️ 시작/일시정지 버튼 -->
+            <button
+                id="startPauseBtn"
+                onclick="toggleStartPause()"
+                class="px-8 py-4 bg-green-500 hover:bg-green-600 text-white text-xl font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+                시작
+            </button>
+            <!--
+                🔘 버튼 스타일 설명:
+                - px-8: 좌우 패딩 (버튼 안쪽 좌우 여백)
+                - py-4: 상하 패딩 (버튼 안쪽 상하 여백)
+                - bg-green-500: 초록색 배경
+                - hover:bg-green-600: 마우스를 올리면 더 진한 초록색
+                - text-white: 흰색 글자
+                - rounded-full: 완전히 둥근 모서리 (알약 모양)
+                - transition-all: 모든 변화에 부드러운 애니메이션
+                - duration-300: 애니메이션 시간 0.3초
+                - transform hover:scale-105: 마우스 올리면 살짝 커져요
+                - shadow-lg: 그림자 효과
+            -->
+
+            <!-- 🔄 리셋 버튼 -->
+            <button
+                onclick="reset()"
+                class="px-8 py-4 bg-gray-500 hover:bg-gray-600 text-white text-xl font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+                리셋
+            </button>
+        </div>
+    </div>
+
+    <!-- 🧠 JavaScript: 스톱워치의 두뇌 역할을 하는 코드 -->
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // 📦 변수 선언 (데이터를 저장하는 상자들)
+        // ═══════════════════════════════════════════════════════════════
+
+        // ⏱️ 경과된 시간을 초 단위로 저장해요 (예: 65초 = 1분 5초)
+        let seconds = 0;
+
+        // 🔄 타이머의 ID를 저장해요 (나중에 타이머를 멈출 때 필요해요)
+        // 💡 쉽게 말하면: 알람시계의 고유번호 같은 거예요
+        let timerInterval = null;
+
+        // ▶️ 현재 스톱워치가 돌아가고 있는지 확인하는 변수
+        // true = 작동 중, false = 멈춤
+        let isRunning = false;
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🔧 함수들 (특정 작업을 수행하는 코드 묶음)
+        // ═══════════════════════════════════════════════════════════════
+
+        /**
+         * 🎯 이 함수가 하는 일: 초(seconds)를 "00:00:00" 형식의 문자열로 바꿔요
+         *
+         * 📥 입력값(매개변수):
+         *   - totalSeconds: 총 경과 시간 (초 단위, 예: 3661초)
+         *
+         * 📤 출력값(반환값): "시:분:초" 형식의 문자열 (예: "01:01:01")
+         *
+         * 💡 쉽게 말하면: 3661초를 "1시간 1분 1초"로 예쁘게 바꿔주는 변환기예요!
+         */
+        function formatTime(totalSeconds) {
+            // 🕐 시간 계산: 총 초를 3600(1시간=3600초)으로 나눈 몫
+            // Math.floor()는 소수점을 버려요 (예: 3661 ÷ 3600 = 1.01... → 1)
+            const hours = Math.floor(totalSeconds / 3600);
+
+            // 🕐 분 계산: 시간을 빼고 남은 초를 60으로 나눈 몫
+            // % 는 나머지 연산자예요 (예: 3661 % 3600 = 61, 61 ÷ 60 = 1)
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+            // 🕐 초 계산: 60으로 나눈 나머지
+            // (예: 3661 % 60 = 1)
+            const secs = totalSeconds % 60;
+
+            // 📝 숫자를 2자리 문자열로 만들어요
+            // padStart(2, '0')는 숫자가 한 자리면 앞에 0을 붙여요
+            // 예: 1 → "01", 59 → "59"
+            // 💡 마치 출석번호가 01, 02, 03... 이렇게 되는 것처럼요!
+            return [
+                String(hours).padStart(2, '0'),   // 시간을 2자리로
+                String(minutes).padStart(2, '0'), // 분을 2자리로
+                String(secs).padStart(2, '0')     // 초를 2자리로
+            ].join(':');  // 콜론(:)으로 연결해서 "00:00:00" 형태로 만들어요
+        }
+
+        /**
+         * 🎯 이 함수가 하는 일: 화면에 보이는 시간을 업데이트해요
+         *
+         * 📥 입력값(매개변수): 없음
+         * 📤 출력값(반환값): 없음 (화면을 직접 바꿔요)
+         *
+         * 💡 쉽게 말하면: 시계 화면의 숫자판을 새로 그리는 거예요!
+         */
+        function updateDisplay() {
+            // 🔍 HTML에서 id가 "display"인 요소를 찾아요
+            // getElementById는 "이름표(id)로 요소를 찾아줘!"라는 명령이에요
+            const display = document.getElementById('display');
+
+            // 📝 찾은 요소의 텍스트 내용을 새 시간으로 바꿔요
+            // textContent는 그 요소 안의 글자를 의미해요
+            display.textContent = formatTime(seconds);
+        }
+
+        /**
+         * 🎯 이 함수가 하는 일: 시작/일시정지 버튼을 눌렀을 때 실행돼요
+         *
+         * 📥 입력값(매개변수): 없음
+         * 📤 출력값(반환값): 없음
+         *
+         * 💡 쉽게 말하면: 리모컨의 재생/일시정지 버튼처럼 동작해요!
+         *    - 멈춰있으면 → 시작
+         *    - 돌아가고 있으면 → 일시정지
+         */
+        function toggleStartPause() {
+            // 🔍 버튼 요소를 찾아요
+            const btn = document.getElementById('startPauseBtn');
+
+            // ❓ 조건문: 현재 작동 중인지 확인해요
+            if (isRunning) {
+                // ⏸️ 작동 중이면 → 일시정지!
+
+                // clearInterval은 반복 작업을 멈추는 명령이에요
+                // 💡 쉽게 말하면: 알람시계를 꺼버리는 거예요
+                clearInterval(timerInterval);
+
+                // 버튼 글자를 "계속"으로 바꿔요
+                btn.textContent = '계속';
+
+                // 버튼 색상을 초록색으로 바꿔요 (다시 시작할 수 있다는 의미)
+                btn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+                btn.classList.add('bg-green-500', 'hover:bg-green-600');
+
+                // 상태를 "멈춤"으로 바꿔요
+                isRunning = false;
+            } else {
+                // ▶️ 멈춰있으면 → 시작!
+
+                // setInterval은 일정 시간마다 반복 작업을 하는 명령이에요
+                // 1000밀리초 = 1초마다 화살표 함수(=>)의 내용을 실행해요
+                // 💡 쉽게 말하면: 1초마다 울리는 알람을 설정하는 거예요
+                timerInterval = setInterval(() => {
+                    seconds++;        // 🔢 초를 1 증가시켜요 (seconds = seconds + 1)
+                    updateDisplay();  // 🖥️ 화면을 업데이트해요
+                }, 1000);  // 1000밀리초 = 1초
+
+                // 버튼 글자를 "일시정지"로 바꿔요
+                btn.textContent = '일시정지';
+
+                // 버튼 색상을 노란색으로 바꿔요 (멈출 수 있다는 의미)
+                btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                btn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+
+                // 상태를 "작동 중"으로 바꿔요
+                isRunning = true;
+            }
+        }
+
+        /**
+         * 🎯 이 함수가 하는 일: 스톱워치를 처음 상태로 되돌려요
+         *
+         * 📥 입력값(매개변수): 없음
+         * 📤 출력값(반환값): 없음
+         *
+         * 💡 쉽게 말하면: 스톱워치의 모든 것을 초기화하는 리셋 버튼이에요!
+         *    마치 게임에서 "처음부터 다시 시작"을 누르는 것처럼요!
+         */
+        function reset() {
+            // ⏹️ 타이머가 돌아가고 있으면 멈춰요
+            clearInterval(timerInterval);
+
+            // 🔢 초를 0으로 되돌려요
+            seconds = 0;
+
+            // ❌ 작동 상태를 멈춤으로 바꿔요
+            isRunning = false;
+
+            // 🖥️ 화면을 업데이트해요 (00:00:00으로 돌아감)
+            updateDisplay();
+
+            // 🔘 버튼을 원래 상태로 되돌려요
+            const btn = document.getElementById('startPauseBtn');
+            btn.textContent = '시작';
+            btn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+            btn.classList.add('bg-green-500', 'hover:bg-green-600');
+        }
+    </script>
+</body>
+</html>

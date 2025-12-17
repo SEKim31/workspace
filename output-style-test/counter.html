@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <!-- 문자 인코딩 설정 (한글이 깨지지 않게) -->
+    <meta charset="UTF-8">
+
+    <!-- 모바일에서도 잘 보이게 하는 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 브라우저 탭에 표시될 제목 -->
+    <title>카운터 앱</title>
+
+    <!-- Tailwind CSS를 CDN으로 불러오기 (인터넷에서 바로 가져옴) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <!--
+        body 클래스 설명:
+        - bg-gray-100: 연한 회색 배경
+        - min-h-screen: 최소 높이를 화면 전체로
+        - flex: 플렉스박스 사용 (정렬을 위해)
+        - items-center: 세로 방향 중앙 정렬
+        - justify-center: 가로 방향 중앙 정렬
+    -->
+
+    <!-- 카드 형태의 컨테이너 -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 w-80">
+        <!--
+            컨테이너 클래스 설명:
+            - bg-white: 흰색 배경
+            - rounded-2xl: 둥근 모서리
+            - shadow-lg: 그림자 효과
+            - p-8: 안쪽 여백 (padding)
+            - w-80: 너비 320px
+        -->
+
+        <!-- 제목 -->
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">
+            카운터
+        </h1>
+        <!--
+            제목 클래스 설명:
+            - text-2xl: 큰 글자 크기
+            - font-bold: 굵은 글씨
+            - text-center: 가운데 정렬
+            - text-gray-800: 진한 회색 글자
+            - mb-6: 아래쪽 여백 (margin-bottom)
+        -->
+
+        <!-- 숫자 표시 영역 -->
+        <div class="text-6xl font-bold text-center text-blue-600 my-8" id="count">
+            0
+        </div>
+        <!--
+            숫자 표시 클래스 설명:
+            - text-6xl: 아주 큰 글자 (숫자가 잘 보이게)
+            - text-blue-600: 파란색 글자
+            - my-8: 위아래 여백
+            - id="count": JavaScript에서 이 요소를 찾기 위한 ID
+        -->
+
+        <!-- 버튼 그룹 -->
+        <div class="flex justify-center gap-3">
+            <!--
+                버튼 그룹 클래스 설명:
+                - flex: 버튼들을 가로로 나란히 배치
+                - justify-center: 가운데 정렬
+                - gap-3: 버튼 사이 간격
+            -->
+
+            <!-- 감소 버튼 (-1) -->
+            <button
+                onclick="decrease()"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-5 rounded-lg transition-colors"
+            >
+                -1
+            </button>
+
+            <!-- 리셋 버튼 -->
+            <button
+                onclick="reset()"
+                class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-5 rounded-lg transition-colors"
+            >
+                리셋
+            </button>
+
+            <!-- 증가 버튼 (+1) -->
+            <button
+                onclick="increase()"
+                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-5 rounded-lg transition-colors"
+            >
+                +1
+            </button>
+            <!--
+                버튼 클래스 설명:
+                - bg-blue-500: 파란색 배경
+                - hover:bg-blue-600: 마우스 올리면 더 진한 파란색
+                - text-white: 흰색 글자
+                - font-bold: 굵은 글씨
+                - py-3: 위아래 패딩
+                - px-5: 좌우 패딩
+                - rounded-lg: 둥근 모서리
+                - transition-colors: 색상 변화를 부드럽게
+            -->
+        </div>
+    </div>
+
+    <!-- JavaScript 코드 -->
+    <script>
+        // ==========================================
+        // 카운터 앱 JavaScript 코드
+        // ==========================================
+
+        // 1. 변수 선언
+        // count 변수에 현재 카운트 값을 저장해요
+        // 처음에는 0으로 시작합니다
+        let count = 0;
+
+        // 2. 화면 업데이트 함수
+        // 이 함수는 count 변수의 값을 화면에 표시해요
+        function updateDisplay() {
+            // document.getElementById('count')는
+            // HTML에서 id="count"인 요소를 찾아요
+            // .textContent는 그 요소의 텍스트를 바꿔요
+            document.getElementById('count').textContent = count;
+        }
+
+        // 3. 증가 함수
+        // +1 버튼을 누르면 실행돼요
+        function increase() {
+            count = count + 1;  // count를 1 증가 (count++ 와 같아요)
+            updateDisplay();     // 화면에 새 값 표시
+        }
+
+        // 4. 감소 함수
+        // -1 버튼을 누르면 실행돼요
+        function decrease() {
+            count = count - 1;  // count를 1 감소 (count-- 와 같아요)
+            updateDisplay();     // 화면에 새 값 표시
+        }
+
+        // 5. 리셋 함수
+        // 리셋 버튼을 누르면 실행돼요
+        function reset() {
+            count = 0;          // count를 0으로 초기화
+            updateDisplay();     // 화면에 0 표시
+        }
+    </script>
+</body>
+</html>
