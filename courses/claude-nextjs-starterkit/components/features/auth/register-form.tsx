@@ -48,7 +48,7 @@ export function RegisterForm() {
 
       // TODO: 회원가입 성공 후 리다이렉트
       // router.push("/login")
-    } catch (error) {
+    } catch {
       toast.error("회원가입 실패", {
         description: "다시 시도해주세요.",
       })

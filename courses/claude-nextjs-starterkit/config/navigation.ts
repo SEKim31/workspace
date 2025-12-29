@@ -1,7 +1,5 @@
 import {
-  Home,
   Settings,
-  User,
   LayoutDashboard,
   type LucideIcon,
 } from "lucide-react"

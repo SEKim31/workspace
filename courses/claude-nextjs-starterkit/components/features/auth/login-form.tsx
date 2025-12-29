@@ -46,7 +46,7 @@ export function LoginForm() {
 
       // TODO: 로그인 성공 후 리다이렉트
       // router.push("/dashboard")
-    } catch (error) {
+    } catch {
       toast.error("로그인 실패", {
         description: "이메일 또는 비밀번호를 확인해주세요.",
       })
